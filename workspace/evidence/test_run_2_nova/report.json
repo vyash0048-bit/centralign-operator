@@ -1,0 +1,503 @@
+{
+  "run_id": "test_run_2_nova",
+  "goal": "Process the pending vendor invoice in the dropbox folder, onboard the vendor into the finance portal if they aren't registered yet, and schedule their payout.",
+  "current_phase": "COMPLETED",
+  "resolved_context": {
+    "organization_name": "Acme Corp India Pvt Ltd",
+    "resolved_aliases": {
+      "dropbox folder": "./workspace/inbox"
+    },
+    "system_endpoints": {
+      "finance_portal_url": "http://127.0.0.1:8001"
+    },
+    "sop": {
+      "sop_id": "SOP-FIN-04",
+      "title": "Standard Vendor Onboarding & Invoice Payout Procedure",
+      "steps": [
+        "1. Ingest the targeted or oldest pending JSON invoice from the resolved inbox directory.",
+        "2. Query the Acme Finance Portal lookup endpoint to check if the vendor is already registered.",
+        "3. If the vendor is not registered, onboard them via the /vendors/new web form using Playwright.",
+        "4. Schedule the invoice payout via the /payouts/new web form using the registered vendor_id.",
+        "5. Move the processed invoice file from the inbox directory to the processed archive directory.",
+        "6. Run independent verification checks against the portal state API, filesystem, and live dashboard DOM."
+      ]
+    },
+    "policies": {
+      "max_autonomous_payout_inr": 50000.0,
+      "require_human_approval_above_limit": true
+    },
+    "episodic_lessons_count": 1,
+    "all_aliases": {
+      "dropbox folder": "./workspace/inbox",
+      "processed archive": "./workspace/processed"
+    }
+  },
+  "plan": [
+    {
+      "step_id": "step_1_ingest_invoice",
+      "title": "Ingest pending vendor invoice from dropbox",
+      "tool_name": "fs.read_next_invoice",
+      "params": {
+        "inbox_dir": "./workspace/inbox",
+        "target_filename": "inv_02_nova.json"
+      },
+      "risk_level": "READ_ONLY",
+      "expected_postcondition": "Invoice JSON loaded and parsed into working memory.",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "output": {
+        "invoice": {
+          "invoice_id": "INV-2026-0942",
+          "vendor_name": "Nova Data Systems LLP",
+          "tax_id": "29-GGGGG-1314-R9Z6",
+          "bank_account": "ICIC0005678_1122334455",
+          "amount_inr": 32000.0,
+          "due_date": "2026-11-20",
+          "currency": "INR",
+          "description": "Annual Security Audit & Penetration Testing",
+          "file_path": "C:\\Projects\\Project\\workspace\\inbox\\inv_02_nova.json"
+        }
+      },
+      "error_history": [],
+      "screenshot_paths": []
+    },
+    {
+      "step_id": "step_2_lookup_vendor",
+      "title": "Query Acme Finance Portal for existing vendor registration",
+      "tool_name": "erp.lookup_vendor",
+      "params": {
+        "portal_url": "http://127.0.0.1:8001",
+        "name": "$working_memory.invoice.vendor_name"
+      },
+      "risk_level": "READ_ONLY",
+      "expected_postcondition": "Vendor presence checked in portal database.",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "output": {
+        "found": false,
+        "vendor": null,
+        "vendor_id": null
+      },
+      "error_history": [],
+      "screenshot_paths": []
+    },
+    {
+      "step_id": "step_3_register_vendor",
+      "title": "Register vendor via /vendors/new web form",
+      "tool_name": "browser.register_vendor_ui",
+      "params": {
+        "portal_url": "http://127.0.0.1:8001",
+        "name": "$working_memory.invoice.vendor_name",
+        "tax_id": "$working_memory.invoice.tax_id",
+        "bank_account": "$working_memory.invoice.bank_account",
+        "evidence_dir": "$evidence_dir"
+      },
+      "risk_level": "LOW_MUTATION",
+      "expected_postcondition": "Vendor successfully registered and VND- ID generated.",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "output": {
+        "vendor_id": "VND-64624A"
+      },
+      "error_history": [],
+      "screenshot_paths": [
+        "C:\\Projects\\Project\\workspace\\evidence\\test_run_2_nova\\step_3_register_vendor_attempt_1.png"
+      ]
+    },
+    {
+      "step_id": "step_4_schedule_payout",
+      "title": "Schedule invoice payout via /payouts/new web form",
+      "tool_name": "browser.schedule_payout_ui",
+      "params": {
+        "portal_url": "http://127.0.0.1:8001",
+        "vendor_id": "$working_memory.vendor_id",
+        "invoice_id": "$working_memory.invoice.invoice_id",
+        "amount_inr": "$working_memory.invoice.amount_inr",
+        "due_date": "$working_memory.invoice.due_date",
+        "evidence_dir": "$evidence_dir"
+      },
+      "risk_level": "HIGH_FINANCIAL",
+      "expected_postcondition": "Payout scheduled with PAY- reference in portal.",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "output": {
+        "payout_id": "PAY-040898"
+      },
+      "error_history": [],
+      "screenshot_paths": [
+        "C:\\Projects\\Project\\workspace\\evidence\\test_run_2_nova\\step_4_schedule_payout_attempt_1.png"
+      ]
+    },
+    {
+      "step_id": "step_5_archive_invoice",
+      "title": "Archive processed invoice file to processed archive",
+      "tool_name": "fs.archive_invoice",
+      "params": {
+        "file_path": "$working_memory.invoice.file_path",
+        "archive_dir": "./workspace/processed"
+      },
+      "risk_level": "LOW_MUTATION",
+      "expected_postcondition": "Invoice JSON moved from inbox to processed directory.",
+      "status": "COMPLETED",
+      "attempts": 1,
+      "output": {
+        "original_path": "C:\\Projects\\Project\\workspace\\inbox\\inv_02_nova.json",
+        "archived_path": "C:\\Projects\\Project\\workspace\\processed\\inv_02_nova.json"
+      },
+      "error_history": [],
+      "screenshot_paths": []
+    }
+  ],
+  "working_memory": {
+    "invoice": {
+      "invoice_id": "INV-2026-0942",
+      "vendor_name": "Nova Data Systems LLP",
+      "tax_id": "29-GGGGG-1314-R9Z6",
+      "bank_account": "ICIC0005678_1122334455",
+      "amount_inr": 32000.0,
+      "due_date": "2026-11-20",
+      "currency": "INR",
+      "description": "Annual Security Audit & Penetration Testing",
+      "file_path": "C:\\Projects\\Project\\workspace\\inbox\\inv_02_nova.json"
+    },
+    "vendor_id": "VND-64624A",
+    "payout_id": "PAY-040898"
+  },
+  "audit_log": [
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "GOAL",
+      "event_type": "INITIALIZED",
+      "message": "Starting run 'test_run_2_nova' with goal: Process the pending vendor invoice in the dropbox folder, onboard the vendor into the finance portal if they aren't registered yet, and schedule their payout.",
+      "details": null
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "UNDERSTAND",
+      "event_type": "PHASE_TRANSITION",
+      "message": "Transitioned to phase UNDERSTAND",
+      "details": null
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "UNDERSTAND",
+      "event_type": "CONTEXT_RESOLVED",
+      "message": "Resolved aliases: ['dropbox folder'], Loaded SOP: SOP-FIN-04, Prior episodic lessons: 1",
+      "details": {
+        "organization_name": "Acme Corp India Pvt Ltd",
+        "resolved_aliases": {
+          "dropbox folder": "./workspace/inbox"
+        },
+        "system_endpoints": {
+          "finance_portal_url": "http://127.0.0.1:8001"
+        },
+        "sop": {
+          "sop_id": "SOP-FIN-04",
+          "title": "Standard Vendor Onboarding & Invoice Payout Procedure",
+          "steps": [
+            "1. Ingest the targeted or oldest pending JSON invoice from the resolved inbox directory.",
+            "2. Query the Acme Finance Portal lookup endpoint to check if the vendor is already registered.",
+            "3. If the vendor is not registered, onboard them via the /vendors/new web form using Playwright.",
+            "4. Schedule the invoice payout via the /payouts/new web form using the registered vendor_id.",
+            "5. Move the processed invoice file from the inbox directory to the processed archive directory.",
+            "6. Run independent verification checks against the portal state API, filesystem, and live dashboard DOM."
+          ]
+        },
+        "policies": {
+          "max_autonomous_payout_inr": 50000.0,
+          "require_human_approval_above_limit": true
+        },
+        "episodic_lessons_count": 1,
+        "all_aliases": {
+          "dropbox folder": "./workspace/inbox",
+          "processed archive": "./workspace/processed"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "PLAN",
+      "event_type": "PHASE_TRANSITION",
+      "message": "Transitioned to phase PLAN",
+      "details": null
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "PLAN",
+      "event_type": "PLAN_GENERATED",
+      "message": "Generated 5 steps with bounded risk levels",
+      "details": {
+        "steps": [
+          "step_1_ingest_invoice",
+          "step_2_lookup_vendor",
+          "step_3_register_vendor",
+          "step_4_schedule_payout",
+          "step_5_archive_invoice"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "EXECUTE",
+      "event_type": "PHASE_TRANSITION",
+      "message": "Transitioned to phase EXECUTE",
+      "details": null
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_INVOCATION",
+      "message": "Executing fs.read_next_invoice (attempt 1)",
+      "details": {
+        "inbox_dir": "./workspace/inbox",
+        "target_filename": "inv_02_nova.json",
+        "step_id": "step_1_ingest_invoice",
+        "attempt": 1
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_SUCCESS",
+      "message": "Step 'step_1_ingest_invoice' completed successfully.",
+      "details": {
+        "invoice": {
+          "invoice_id": "INV-2026-0942",
+          "vendor_name": "Nova Data Systems LLP",
+          "tax_id": "29-GGGGG-1314-R9Z6",
+          "bank_account": "ICIC0005678_1122334455",
+          "amount_inr": 32000.0,
+          "due_date": "2026-11-20",
+          "currency": "INR",
+          "description": "Annual Security Audit & Penetration Testing",
+          "file_path": "C:\\Projects\\Project\\workspace\\inbox\\inv_02_nova.json"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.809984+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_INVOCATION",
+      "message": "Executing erp.lookup_vendor (attempt 1)",
+      "details": {
+        "portal_url": "http://127.0.0.1:8001",
+        "name": "Nova Data Systems LLP",
+        "step_id": "step_2_lookup_vendor",
+        "attempt": 1
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.825979+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_SUCCESS",
+      "message": "Step 'step_2_lookup_vendor' completed successfully.",
+      "details": {
+        "found": false,
+        "vendor": null,
+        "vendor_id": null
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.825979+00:00",
+      "phase": "EXECUTE",
+      "event_type": "MEMORY_APPLIED",
+      "message": "[MEMORY APPLIED] Lesson LSN-5DAA: tax_id '29-GGGGG-1314-R9Z6' -> '29GGGGG1314R9Z6' (rule: strip_hyphens_and_spaces_uppercase)",
+      "details": null
+    },
+    {
+      "timestamp": "2026-10-20T06:49:55.825979+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_INVOCATION",
+      "message": "Executing browser.register_vendor_ui (attempt 1)",
+      "details": {
+        "portal_url": "http://127.0.0.1:8001",
+        "name": "Nova Data Systems LLP",
+        "tax_id": "29GGGGG1314R9Z6",
+        "bank_account": "ICIC0005678_1122334455",
+        "evidence_dir": "C:\\Projects\\Project\\workspace\\evidence\\test_run_2_nova",
+        "step_id": "step_3_register_vendor",
+        "attempt": 1
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:57.298330+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_SUCCESS",
+      "message": "Step 'step_3_register_vendor' completed successfully.",
+      "details": {
+        "vendor_id": "VND-64624A"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:57.298330+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_INVOCATION",
+      "message": "Executing browser.schedule_payout_ui (attempt 1)",
+      "details": {
+        "portal_url": "http://127.0.0.1:8001",
+        "vendor_id": "VND-64624A",
+        "invoice_id": "INV-2026-0942",
+        "amount_inr": 32000.0,
+        "due_date": "2026-11-20",
+        "evidence_dir": "C:\\Projects\\Project\\workspace\\evidence\\test_run_2_nova",
+        "step_id": "step_4_schedule_payout",
+        "attempt": 1
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:58.799056+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_SUCCESS",
+      "message": "Step 'step_4_schedule_payout' completed successfully.",
+      "details": {
+        "payout_id": "PAY-040898"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:58.799056+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_INVOCATION",
+      "message": "Executing fs.archive_invoice (attempt 1)",
+      "details": {
+        "file_path": "C:\\Projects\\Project\\workspace\\inbox\\inv_02_nova.json",
+        "archive_dir": "./workspace/processed",
+        "step_id": "step_5_archive_invoice",
+        "attempt": 1
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:58.800040+00:00",
+      "phase": "EXECUTE",
+      "event_type": "TOOL_SUCCESS",
+      "message": "Step 'step_5_archive_invoice' completed successfully.",
+      "details": {
+        "original_path": "C:\\Projects\\Project\\workspace\\inbox\\inv_02_nova.json",
+        "archived_path": "C:\\Projects\\Project\\workspace\\processed\\inv_02_nova.json"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:58.800040+00:00",
+      "phase": "VERIFY",
+      "event_type": "PHASE_TRANSITION",
+      "message": "Transitioned to phase VERIFY",
+      "details": null
+    },
+    {
+      "timestamp": "2026-10-20T06:49:59.698033+00:00",
+      "phase": "VERIFY",
+      "event_type": "VERIFICATION_CHECK",
+      "message": "Check 'vendor_persisted': PASSED",
+      "details": {
+        "check_name": "vendor_persisted",
+        "passed": true,
+        "expected": "Vendor 'VND-64624A' with 15-char alphanumeric tax_id",
+        "actual": "Found: VND-64624A (tax_id: 29GGGGG1314R9Z6)",
+        "evidence_source": "GET http://127.0.0.1:8001/api/verify/state"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:59.698033+00:00",
+      "phase": "VERIFY",
+      "event_type": "VERIFICATION_CHECK",
+      "message": "Check 'payout_scheduled': PASSED",
+      "details": {
+        "check_name": "payout_scheduled",
+        "passed": true,
+        "expected": "Payout 'PAY-040898' with state == 'SCHEDULED'",
+        "actual": "Found: PAY-040898 (state: SCHEDULED)",
+        "evidence_source": "GET http://127.0.0.1:8001/api/verify/state"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:59.698033+00:00",
+      "phase": "VERIFY",
+      "event_type": "VERIFICATION_CHECK",
+      "message": "Check 'amount_integrity': PASSED",
+      "details": {
+        "check_name": "amount_integrity",
+        "passed": true,
+        "expected": "₹32,000.00",
+        "actual": "₹32,000.00",
+        "evidence_source": "Reconciliation: Source Invoice vs. Portal DB Record"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:59.698033+00:00",
+      "phase": "VERIFY",
+      "event_type": "VERIFICATION_CHECK",
+      "message": "Check 'file_lifecycle': PASSED",
+      "details": {
+        "check_name": "file_lifecycle",
+        "passed": true,
+        "expected": "File 'inv_02_nova.json' removed from inbox/ and present in processed/",
+        "actual": "inbox=False, processed=True",
+        "evidence_source": "Local FileSystem Inspection (workspace/)"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:59.698033+00:00",
+      "phase": "VERIFY",
+      "event_type": "VERIFICATION_CHECK",
+      "message": "Check 'visual_dom_receipt': PASSED",
+      "details": {
+        "check_name": "visual_dom_receipt",
+        "passed": true,
+        "expected": "Payout ID 'PAY-040898' visible in #payouts-table and screenshot saved",
+        "actual": "Rendered in DOM: True. Screenshot: C:\\Projects\\Project\\workspace\\evidence\\test_run_2_nova\\final_dashboard_verified.png",
+        "evidence_source": "Playwright Chromium DOM Inspection (GET /)"
+      }
+    },
+    {
+      "timestamp": "2026-10-20T06:49:59.698033+00:00",
+      "phase": "COMPLETED",
+      "event_type": "PHASE_TRANSITION",
+      "message": "Transitioned to phase COMPLETED",
+      "details": null
+    },
+    {
+      "timestamp": "2026-10-20T06:49:59.698033+00:00",
+      "phase": "COMPLETED",
+      "event_type": "TASK_COMPLETED",
+      "message": "All 5 independent verification checks passed. Task complete.",
+      "details": null
+    }
+  ],
+  "verification_checks": [
+    {
+      "check_name": "vendor_persisted",
+      "passed": true,
+      "expected": "Vendor 'VND-64624A' with 15-char alphanumeric tax_id",
+      "actual": "Found: VND-64624A (tax_id: 29GGGGG1314R9Z6)",
+      "evidence_source": "GET http://127.0.0.1:8001/api/verify/state"
+    },
+    {
+      "check_name": "payout_scheduled",
+      "passed": true,
+      "expected": "Payout 'PAY-040898' with state == 'SCHEDULED'",
+      "actual": "Found: PAY-040898 (state: SCHEDULED)",
+      "evidence_source": "GET http://127.0.0.1:8001/api/verify/state"
+    },
+    {
+      "check_name": "amount_integrity",
+      "passed": true,
+      "expected": "₹32,000.00",
+      "actual": "₹32,000.00",
+      "evidence_source": "Reconciliation: Source Invoice vs. Portal DB Record"
+    },
+    {
+      "check_name": "file_lifecycle",
+      "passed": true,
+      "expected": "File 'inv_02_nova.json' removed from inbox/ and present in processed/",
+      "actual": "inbox=False, processed=True",
+      "evidence_source": "Local FileSystem Inspection (workspace/)"
+    },
+    {
+      "check_name": "visual_dom_receipt",
+      "passed": true,
+      "expected": "Payout ID 'PAY-040898' visible in #payouts-table and screenshot saved",
+      "actual": "Rendered in DOM: True. Screenshot: C:\\Projects\\Project\\workspace\\evidence\\test_run_2_nova\\final_dashboard_verified.png",
+      "evidence_source": "Playwright Chromium DOM Inspection (GET /)"
+    }
+  ],
+  "evidence_dir": "C:\\Projects\\Project\\workspace\\evidence\\test_run_2_nova"
+}

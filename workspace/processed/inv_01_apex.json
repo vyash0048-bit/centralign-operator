@@ -1,0 +1,10 @@
+{
+  "invoice_id": "INV-2026-0891",
+  "vendor_name": "Apex Cloud Solutions Pvt Ltd",
+  "tax_id": "27-AABCA-1234-F1Z5",
+  "bank_account": "HDFC0001234_9988776655",
+  "amount_inr": 84500.0,
+  "due_date": "2026-11-15",
+  "currency": "INR",
+  "description": "Enterprise GPU Cluster Hosting - Q4"
+}

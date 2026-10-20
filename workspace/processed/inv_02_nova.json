@@ -1,0 +1,10 @@
+{
+  "invoice_id": "INV-2026-0942",
+  "vendor_name": "Nova Data Systems LLP",
+  "tax_id": "29-GGGGG-1314-R9Z6",
+  "bank_account": "ICIC0005678_1122334455",
+  "amount_inr": 32000.0,
+  "due_date": "2026-11-20",
+  "currency": "INR",
+  "description": "Annual Security Audit & Penetration Testing"
+}

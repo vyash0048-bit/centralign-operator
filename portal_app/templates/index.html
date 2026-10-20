@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Acme Corp // Enterprise Finance Portal</title>
+  <style>
+    :root {
+      /* Backgrounds & Surfaces */
+      --bg-canvas: #F8FAFC;
+      --bg-surface: #FFFFFF;
+      --bg-header: #0F172A;
+      --bg-subtle: #F1F5F9;
+
+      /* Typography */
+      --text-primary: #0F172A;
+      --text-secondary: #475569;
+      --text-muted: #94A3B8;
+      --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      --font-mono: "JetBrains Mono", "Fira Code", Consolas, monospace;
+
+      /* Brand & Accents */
+      --brand-primary: #2563EB;
+      --brand-hover: #1D4ED8;
+      --border-color: #E2E8F0;
+
+      /* Semantic Status Colors */
+      --status-success-bg: #ECFDF5;
+      --status-success-bd: #10B981;
+      --status-success-tx: #065F46;
+
+      --status-error-bg: #FEF2F2;
+      --status-error-bd: #EF4444;
+      --status-error-tx: #991B1B;
+
+      --status-warn-bg: #FFFBEB;
+      --status-warn-bd: #F59E0B;
+      --status-warn-tx: #92400E;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background-color: var(--bg-header);
+      color: #FFFFFF;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .badge-internal {
+      background: rgba(255, 255, 255, 0.15);
+      color: #93C5FD;
+      font-size: 0.7rem;
+      font-family: var(--font-mono);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    nav {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    nav a {
+      color: #94A3B8;
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    nav a:hover, nav a.active {
+      color: #FFFFFF;
+    }
+
+    main {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* KPI Summary Cards */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .kpi-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .kpi-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .kpi-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+
+    /* Cards & Containers */
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+      margin-bottom: 2rem;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #FFFFFF;
+    }
+
+    .card-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .card-body {
+      padding: 1.5rem;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    thead th {
+      background-color: var(--bg-subtle);
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    tbody td {
+      padding: 0.875rem 1rem;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:hover {
+      background-color: #F8FAFC;
+    }
+
+    /* Monospace Pills */
+    .pill-mono {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      background: var(--bg-subtle);
+      color: var(--text-secondary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-color);
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-status-active, .badge-status-scheduled {
+      background: var(--status-success-bg);
+      color: var(--status-success-tx);
+      border: 1px solid var(--status-success-bd);
+    }
+
+    /* Banners */
+    .banner {
+      padding: 1rem 1.25rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .banner-error {
+      background-color: var(--status-error-bg);
+      border: 1px solid var(--status-error-bd);
+      color: var(--status-error-tx);
+    }
+
+    .banner-success {
+      background-color: var(--status-success-bg);
+      border: 1px solid var(--status-success-bd);
+      color: var(--status-success-tx);
+    }
+
+    /* Forms */
+    .form-container {
+      max-width: 560px;
+      margin: 1rem auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 0.375rem;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 0.625rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-family: var(--font-sans);
+      font-size: 0.875rem;
+      color: var(--text-primary);
+      background-color: #FFFFFF;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    }
+
+    .btn-primary {
+      width: 100%;
+      background-color: var(--brand-primary);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 6px;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.15s ease;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--brand-hover);
+    }
+
+    /* Empty state */
+    .empty-state {
+      padding: 2.5rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    /* Console View */
+    .pipeline-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .pipeline-step {
+      padding: 0.35rem 0.75rem;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-color);
+      border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .pipeline-step.completed {
+      background: var(--status-success-bg);
+      color: var(--status-success-tx);
+      border-color: var(--status-success-bd);
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .gallery-item {
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .gallery-caption {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <span>ACME CORP // Enterprise Finance Portal</span>
+      <span class="badge-internal">INTERNAL ERP v2.4</span>
+    </div>
+    <nav>
+      <a href="/" class="{% if page == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="/vendors/new" class="{% if page == 'vendor_form' %}active{% endif %}">Register Vendor</a>
+      <a href="/payouts/new" class="{% if page == 'payout_form' %}active{% endif %}">Schedule Payout</a>
+      <a href="/console" class="{% if page == 'console' %}active{% endif %}">CentrAlign Console</a>
+    </nav>
+  </header>
+
+  <main>
+    {% if page == 'dashboard' %}
+    <!-- KPI Summary Strip -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="kpi-title">Active Registered Vendors</div>
+        <div class="kpi-value" id="kpi-vendor-count">{{ kpi_vendor_count }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Scheduled Payouts</div>
+        <div class="kpi-value" id="kpi-payout-count">{{ kpi_payout_count }}</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-title">Disbursed Volume (INR)</div>
+        <div class="kpi-value" id="kpi-payout-volume">₹{{ "{:,.2f}".format(kpi_payout_volume) }}</div>
+      </div>
+    </div>
+
+    <!-- Registered Vendors Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Registered Enterprise Vendors</div>
+      </div>
+      <table id="vendors-table">
+        <thead>
+          <tr>
+            <th>Vendor ID</th>
+            <th>Legal Entity Name</th>
+            <th>GSTIN / Tax ID</th>
+            <th>Bank Account</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if vendors %}
+            {% for vid, v in vendors.items() %}
+            <tr>
+              <td><span class="pill-mono">{{ v.vendor_id }}</span></td>
+              <td><strong>{{ v.name }}</strong></td>
+              <td><span class="pill-mono">{{ v.tax_id }}</span></td>
+              <td><span class="pill-mono">{{ v.bank_account }}</span></td>
+              <td><span class="badge-status badge-status-active">ACTIVE</span></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="5" class="empty-state">No registered vendors yet. Use the Onboarding Form to register one.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Scheduled Payouts Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Scheduled Vendor Disbursements</div>
+      </div>
+      <table id="payouts-table">
+        <thead>
+          <tr>
+            <th>Payout ID</th>
+            <th>Vendor ID</th>
+            <th>Invoice Reference</th>
+            <th>Amount (INR)</th>
+            <th>Due Date</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if payouts %}
+            {% for pid, p in payouts.items() %}
+            <tr>
+              <td><span class="pill-mono">{{ p.payout_id }}</span></td>
+              <td><span class="pill-mono">{{ p.vendor_id }}</span></td>
+              <td><strong>{{ p.invoice_id }}</strong></td>
+              <td><strong>₹{{ "{:,.2f}".format(p.amount_inr) }}</strong></td>
+              <td>{{ p.due_date }}</td>
+              <td><span class="badge-status badge-status-scheduled">{{ p.state }}</span></td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="empty-state">No scheduled disbursements found.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    {% elif page == 'vendor_form' %}
+    <div class="form-container">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Onboard New Vendor (SOP-FIN-04)</div>
+        </div>
+        <div class="card-body">
+          {% if error_banner %}
+          <div id="error-banner" data-error-code="{{ error_banner.code }}" class="banner banner-error">
+            <strong>Validation Error [ERP-422]:</strong> Field 'tax_id' must be exactly 15 alphanumeric characters without hyphens or spaces.
+          </div>
+          {% endif %}
+
+          {% if success_banner %}
+          <div id="success-banner" data-vendor-id="{{ success_banner.vendor_id }}" class="banner banner-success">
+            <strong>Vendor Registered Successfully!</strong> Assigned System ID: <code>{{ success_banner.vendor_id }}</code>
+          </div>
+          {% endif %}
+
+          <form method="POST" action="/vendors/new">
+            <div class="form-group">
+              <label for="vendor-name">Legal Entity Name</label>
+              <input id="vendor-name" name="name" type="text" required value="{{ form_name }}" placeholder="e.g. Apex Cloud Solutions Pvt Ltd" />
+            </div>
+
+            <div class="form-group">
+              <label for="vendor-tax-id">Tax ID (15-Char Alphanumeric GSTIN)</label>
+              <input id="vendor-tax-id" name="tax_id" type="text" required value="{{ form_tax_id }}" placeholder="e.g. 27AABCA1234F1Z5" />
+            </div>
+
+            <div class="form-group">
+              <label for="vendor-bank">Settlement Bank Account</label>
+              <input id="vendor-bank" name="bank_account" type="text" required value="{{ form_bank }}" placeholder="e.g. HDFC0001234_9988776655" />
+            </div>
+
+            <button id="submit-vendor-btn" type="submit" class="btn-primary">Register Vendor</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {% elif page == 'payout_form' %}
+    <div class="form-container">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Schedule Vendor Invoice Payout</div>
+        </div>
+        <div class="card-body">
+          {% if error_banner %}
+          <div id="error-banner" data-error-code="{{ error_banner.code }}" class="banner banner-error">
+            {{ error_banner.message }}
+          </div>
+          {% endif %}
+
+          {% if payout_success_banner %}
+          <div id="payout-success-banner" data-payout-id="{{ payout_success_banner.payout_id }}" class="banner banner-success">
+            <strong>Payout Scheduled Successfully!</strong> Reference ID: <code>{{ payout_success_banner.payout_id }}</code>
+          </div>
+          {% endif %}
+
+          <form method="POST" action="/payouts/new">
+            <div class="form-group">
+              <label for="payout-vendor-id">ERP Vendor ID</label>
+              <input id="payout-vendor-id" name="vendor_id" type="text" required value="{{ form_vendor_id }}" placeholder="e.g. VND-A1B2C3" />
+            </div>
+
+            <div class="form-group">
+              <label for="payout-invoice-id">Invoice Number</label>
+              <input id="payout-invoice-id" name="invoice_id" type="text" required value="{{ form_invoice_id }}" placeholder="e.g. INV-2026-0891" />
+            </div>
+
+            <div class="form-group">
+              <label for="payout-amount">Payout Amount (INR)</label>
+              <input id="payout-amount" name="amount_inr" type="number" step="0.01" required value="{{ form_amount }}" placeholder="84500.00" />
+            </div>
+
+            <div class="form-group">
+              <label for="payout-due-date">Settlement Due Date</label>
+              <input id="payout-due-date" name="due_date" type="text" required value="{{ form_due_date }}" placeholder="2026-11-15" />
+            </div>
+
+            <button id="submit-payout-btn" type="submit" class="btn-primary">Schedule Payout</button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    {% elif page == 'console' %}
+    <!-- CentrAlign Operator Console -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Organizational Memory: Learned Episodic Lessons</div>
+      </div>
+      <table id="lessons-table">
+        <thead>
+          <tr>
+            <th>Lesson ID</th>
+            <th>Tool Name</th>
+            <th>Error Signature</th>
+            <th>Parameter</th>
+            <th>Transformation Rule</th>
+            <th>Explanation</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if lessons %}
+            {% for l in lessons %}
+            <tr>
+              <td><span class="pill-mono">{{ l.lesson_id }}</span></td>
+              <td><span class="pill-mono">{{ l.tool_name }}</span></td>
+              <td><span class="badge-status badge-status-scheduled">{{ l.error_signature }}</span></td>
+              <td><span class="pill-mono">{{ l.parameter_name }}</span></td>
+              <td><strong>{{ l.transformation_rule }}</strong></td>
+              <td>{{ l.explanation }}</td>
+            </tr>
+            {% endfor %}
+          {% else %}
+            <tr>
+              <td colspan="6" class="empty-state">No episodic lessons learned yet.</td>
+            </tr>
+          {% endif %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if runs %}
+      {% for r in runs %}
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Run: {{ r.report.run_id }} &mdash; Status: <span class="badge-status badge-status-active">{{ r.report.current_phase }}</span></div>
+        </div>
+        <div class="card-body">
+          <p><strong>Goal:</strong> {{ r.report.goal }}</p>
+          
+          <div class="pipeline-bar">
+            {% for phase in ['GOAL', 'UNDERSTAND', 'PLAN', 'EXECUTE', 'OBSERVE', 'ADAPT', 'VERIFY', 'COMPLETED'] %}
+            <div class="pipeline-step completed">{{ phase }}</div>
+            {% endfor %}
+          </div>
+
+          <h4 style="margin: 1.5rem 0 0.5rem;">Independent Verification Matrix</h4>
+          <table>
+            <thead>
+              <tr>
+                <th>Check Name</th>
+                <th>Target</th>
+                <th>Expected</th>
+                <th>Actual</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for check in r.report.verification_checks %}
+              <tr>
+                <td><strong>{{ check.check_name }}</strong></td>
+                <td>{{ check.evidence_source }}</td>
+                <td><span class="pill-mono">{{ check.expected }}</span></td>
+                <td><span class="pill-mono">{{ check.actual }}</span></td>
+                <td>
+                  {% if check.passed %}
+                  <span class="badge-status badge-status-active">PASS</span>
+                  {% else %}
+                  <span class="badge-status" style="background:var(--status-error-bg);color:var(--status-error-tx);border:1px solid var(--status-error-bd);">FAIL</span>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {% if r.screenshots %}
+          <h4 style="margin: 1.5rem 0 0.5rem;">Captured Visual Evidence</h4>
+          <div class="gallery-grid">
+            {% for shot in r.screenshots %}
+            <div class="gallery-item">
+              <img src="{{ shot }}" alt="Screenshot Evidence" />
+              <div class="gallery-caption">{{ shot.split('/')[-1] }}</div>
+            </div>
+            {% endfor %}
+          </div>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+    <div class="card">
+      <div class="card-body empty-state">
+        No execution runs recorded yet.
+      </div>
+    </div>
+    {% endif %}
+
+    {% endif %}
+  </main>
+</body>
+</html>

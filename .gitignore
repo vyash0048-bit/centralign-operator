@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment variables & secrets (NEVER commit live API keys)
+.env
+.env.local
+!.env.example
+
+# Pytest & coverage caches
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Playwright temporary artifacts (outside of workspace/evidence)
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+
+# IDEs & OS metadata
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.swp
+
+# Explicitly track workspace seed files and evidence artifacts for GitHub review
+!workspace/
+!workspace/company_memory.json
+!workspace/inbox/*.json
+!workspace/processed/*.json
+!workspace/evidence/**
+!workspace/evidence/**/*.png
+!workspace/evidence/**/*.json

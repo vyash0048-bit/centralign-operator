@@ -1,0 +1,38 @@
+{
+  "organization_name": "Acme Corp India Pvt Ltd",
+  "directory_aliases": {
+    "dropbox folder": "./workspace/inbox",
+    "processed archive": "./workspace/processed"
+  },
+  "system_endpoints": {
+    "finance_portal_url": "http://127.0.0.1:8001"
+  },
+  "sops": {
+    "SOP-FIN-04": {
+      "title": "Standard Vendor Onboarding & Invoice Payout Procedure",
+      "steps": [
+        "1. Ingest the targeted or oldest pending JSON invoice from the resolved inbox directory.",
+        "2. Query the Acme Finance Portal lookup endpoint to check if the vendor is already registered.",
+        "3. If the vendor is not registered, onboard them via the /vendors/new web form using Playwright.",
+        "4. Schedule the invoice payout via the /payouts/new web form using the registered vendor_id.",
+        "5. Move the processed invoice file from the inbox directory to the processed archive directory.",
+        "6. Run independent verification checks against the portal state API, filesystem, and live dashboard DOM."
+      ]
+    }
+  },
+  "policies": {
+    "max_autonomous_payout_inr": 50000.0,
+    "require_human_approval_above_limit": true
+  },
+  "episodic_lessons": [
+    {
+      "lesson_id": "LSN-5DAA",
+      "tool_name": "browser.register_vendor_ui",
+      "error_signature": "INVALID_TAX_ID",
+      "parameter_name": "tax_id",
+      "transformation_rule": "strip_hyphens_and_spaces_uppercase",
+      "explanation": "Acme Finance Portal requires 15-character alphanumeric GSTIN without hyphens or spaces.",
+      "created_at": "2026-10-20T06:49:50.956397+00:00"
+    }
+  ]
+}
