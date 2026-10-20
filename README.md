@@ -177,8 +177,8 @@ Every browser action captures a `1280x800` full-page PNG receipt inside `./works
     <th width="50%">🟢 Attempt 2: Self-Healed & Vendor Onboarded</th>
   </tr>
   <tr>
-    <td><img src="workspace/evidence/run_1_apex/step_3_register_vendor_attempt_1.png" alt="Run 1 Attempt 1 Failure" width="100%" /></td>
-    <td><img src="workspace/evidence/run_1_apex/step_3_register_vendor_attempt_2.png" alt="Run 1 Attempt 2 Success" width="100%" /></td>
+    <td><img src="workspace/evidence/test_run_1_apex/step_3_register_vendor_attempt_1.png" alt="Run 1 Attempt 1 Failure" width="100%" /></td>
+    <td><img src="workspace/evidence/test_run_1_apex/step_3_register_vendor_attempt_2.png" alt="Run 1 Attempt 2 Success" width="100%" /></td>
   </tr>
   <tr>
     <td align="center"><em>Playwright observes <code>#error-banner</code> when submitting <code>27-AABCA-1234-F1Z5</code></em></td>
@@ -193,8 +193,8 @@ Every browser action captures a `1280x800` full-page PNG receipt inside `./works
     <th width="50%">✅ Independent Verifier: Live Dashboard DOM Receipt</th>
   </tr>
   <tr>
-    <td><img src="workspace/evidence/run_2_nova/step_3_register_vendor_attempt_1.png" alt="Run 2 Attempt 1 Pre-Sanitized Success" width="100%" /></td>
-    <td><img src="workspace/evidence/run_2_nova/final_dashboard_verified.png" alt="Final Dashboard Verified" width="100%" /></td>
+    <td><img src="workspace/evidence/test_run_2_nova/step_3_register_vendor_attempt_1.png" alt="Run 2 Attempt 1 Pre-Sanitized Success" width="100%" /></td>
+    <td><img src="workspace/evidence/test_run_2_nova/final_dashboard_verified.png" alt="Final Dashboard Verified" width="100%" /></td>
   </tr>
   <tr>
     <td align="center"><em><code>29-GGGGG-1314-R9Z6</code> sanitized to <code>29GGGGG1314R9Z6</code> before Attempt 1</em></td>
